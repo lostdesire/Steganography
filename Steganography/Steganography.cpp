@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 				else {
-					e = "data size error";						// data size가 올바르지 않을 때
+					e = "data size error";				// data size가 올바르지 않을 때
 					throw e;
 				}
 				
@@ -80,18 +80,18 @@ int main(int argc, char* argv[]) {
 				fopen_s(&fout, "stego.bmp", "wb");
 
 				if (fout) {
-					fwrite(info, sizeof(char), 54, fout);				// bmp 파일 헤더 입력
-					fwrite(data, sizeof(char), size, fout);				// bmp 파일 데이터 입력
+					fwrite(info, sizeof(char), 54, fout);	// bmp 파일 헤더 입력
+					fwrite(data, sizeof(char), size, fout);	// bmp 파일 데이터 입력
 				}
 				else {
-					e = "can't create 'stego.bmp' file";				// stego.bmp 생성 불가능 할 때
+					e = "can't create 'stego.bmp' file";	// stego.bmp 생성 불가능 할 때
 					throw e;
 				}
 
 				fclose(fout);
 			}
 			else {
-				e = "no exist 'origin.bmp' file";					// origin.bmp 파일이 존재하지 않을 때
+				e = "no exist 'origin.bmp' file";		// origin.bmp 파일이 존재하지 않을 때
 				throw e;
 			}
 		}
