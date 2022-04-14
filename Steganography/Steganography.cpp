@@ -18,29 +18,29 @@ int main(int argc, char* argv[]) {
 			fopen_s(&fin, "origin.bmp", "rb+");
 			cout << endl;
 			if (fin) {
-				getline(cin, text);								// ÅØ½ºÆ® ÀĞ±â ('\n'·Î ±¸ºĞ)
+				getline(cin, text);					// í…ìŠ¤íŠ¸ ì½ê¸° ('\n'ë¡œ êµ¬ë¶„)
 
 				vector<bitset<8>> text_to_ascii;
 
-				// ÅØ½ºÆ® 2Áø¼ö ¾Æ½ºÅ°·Î º¯È¯
+				// í…ìŠ¤íŠ¸ 2ì§„ìˆ˜ ì•„ìŠ¤í‚¤ë¡œ ë³€í™˜
 				for (const auto& item : text) {
 					text_to_ascii.push_back(item);
 				}
 
-				// ÅØ½ºÆ®ÀÇ ¾Æ½ºÅ° ¹®ÀÚ ¼ö(2Áø¼ö)
-				// Little Endian ¹æ½ÄÀ¸·Î ÀúÀå
+				// í…ìŠ¤íŠ¸ì˜ ì•„ìŠ¤í‚¤ ë¬¸ì ìˆ˜(2ì§„ìˆ˜)
+				// Little Endian ë°©ì‹ìœ¼ë¡œ ì €ì¥
 				bitset<12> text_size(text_to_ascii.size());
 
 				char info[54];
-				fread(info, sizeof(char), 54, fin);				// bmp ÆÄÀÏ Çì´õºÎºĞ
+				fread(info, sizeof(char), 54, fin);			// bmp íŒŒì¼ í—¤ë”ë¶€ë¶„
 
-				int size = *(int*)&info[2];						// bmp ÆÄÀÏ Å©±â
+				int size = *(int*)&info[2];				// bmp íŒŒì¼ í¬ê¸°
 				char* data = new char[size];
-				fread(data, sizeof(char), size, fin);			// bmp ÆÄÀÏÀÇ µ¥ÀÌÅÍºÎºĞ
+				fread(data, sizeof(char), size, fin);			// bmp íŒŒì¼ì˜ ë°ì´í„°ë¶€ë¶„
 
 				fclose(fin);
 
-				// ÅØ½ºÆ®ÀÇ »çÀÌÁî¸¦ µ¥ÀÌÅÍÀÇ Ã¹ 12¹ÙÀÌÆ®¿¡ ±â·Ï
+				// í…ìŠ¤íŠ¸ì˜ ì‚¬ì´ì¦ˆë¥¼ ë°ì´í„°ì˜ ì²« 12ë°”ì´íŠ¸ì— ê¸°ë¡
 				if (size > 12) {
 					for (int i = 0; i < 12; i++) {
 						if ((int)data[i] % 2 == 0) {
@@ -56,15 +56,15 @@ int main(int argc, char* argv[]) {
 					}
 				}
 				else {
-					e = "data size error";						// data size°¡ ¿Ã¹Ù¸£Áö ¾ÊÀ» ¶§
+					e = "data size error";						// data sizeê°€ ì˜¬ë°”ë¥´ì§€ ì•Šì„ ë•Œ
 					throw e;
 				}
 				
-				// ÅØ½ºÆ®ÀÇ »çÀÌÁî ¸¸Å­ µ¥ÀÌÅÍ¸¦ ±â·Ï
+				// í…ìŠ¤íŠ¸ì˜ ì‚¬ì´ì¦ˆ ë§Œí¼ ë°ì´í„°ë¥¼ ê¸°ë¡
 				for (unsigned int i = 0; i < text_to_ascii.size(); i++) {
 					for (int j = 0; j < 8; j++) {
-						if ((int)data[i * 8 + j + 12] % 2 == 0) {		// 8¹ÙÀÌÆ® ´ç ÅØ½ºÆ® 1¹®ÀÚ ±â·Ï
-							if (text_to_ascii.at(i).test(7 - j)) {		// ÅØ½ºÆ® ³»¿ëÀº 12¹ÙÀÌÆ® ÀÌÈÄ·Î ±â·Ï
+						if ((int)data[i * 8 + j + 12] % 2 == 0) {		// 8ë°”ì´íŠ¸ ë‹¹ í…ìŠ¤íŠ¸ 1ë¬¸ì ê¸°ë¡
+							if (text_to_ascii.at(i).test(7 - j)) {		// í…ìŠ¤íŠ¸ ë‚´ìš©ì€ 12ë°”ì´íŠ¸ ì´í›„ë¡œ ê¸°ë¡
 								data[i * 8 + j + 12]++;
 							}
 						}
@@ -76,22 +76,22 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
-				// stego.bmp »ı¼º
+				// stego.bmp ìƒì„±
 				fopen_s(&fout, "stego.bmp", "wb");
 
 				if (fout) {
-					fwrite(info, sizeof(char), 54, fout);				// bmp ÆÄÀÏ Çì´õ ÀÔ·Â
-					fwrite(data, sizeof(char), size, fout);				// bmp ÆÄÀÏ µ¥ÀÌÅÍ ÀÔ·Â
+					fwrite(info, sizeof(char), 54, fout);				// bmp íŒŒì¼ í—¤ë” ì…ë ¥
+					fwrite(data, sizeof(char), size, fout);				// bmp íŒŒì¼ ë°ì´í„° ì…ë ¥
 				}
 				else {
-					e = "can't create 'stego.bmp' file";				// stego.bmp »ı¼º ºÒ°¡´É ÇÒ ¶§
+					e = "can't create 'stego.bmp' file";				// stego.bmp ìƒì„± ë¶ˆê°€ëŠ¥ í•  ë•Œ
 					throw e;
 				}
 
 				fclose(fout);
 			}
 			else {
-				e = "no exist 'origin.bmp' file";						// origin.bmp ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§
+				e = "no exist 'origin.bmp' file";					// origin.bmp íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ë•Œ
 				throw e;
 			}
 		}
@@ -100,15 +100,15 @@ int main(int argc, char* argv[]) {
 			fopen_s(&fin, "stego.bmp", "rb");
 			if (fin) {
 				char info[54];
-				fread(info, sizeof(char), 54, fin);				// bmpÆÄÀÏÀÇ Çì´õºÎºĞ
+				fread(info, sizeof(char), 54, fin);		// bmpíŒŒì¼ì˜ í—¤ë”ë¶€ë¶„
 
-				int size = *(int*)&info[2];						// bmpÆÄÀÏÀÇ Å©±â
+				int size = *(int*)&info[2];			// bmpíŒŒì¼ì˜ í¬ê¸°
 				char* data = new char[size];
-				fread(data, sizeof(char), size, fin);			// bmpÆÄÀÏÀÇ µ¥ÀÌÅÍºÎºĞ
+				fread(data, sizeof(char), size, fin);		// bmpíŒŒì¼ì˜ ë°ì´í„°ë¶€ë¶„
 
 				fclose(fin);
 
-				// bmp ÆÄÀÏ¿¡ ¼û°ÜÁø ÅØ½ºÆ®ÀÇ ±æÀÌ
+				// bmp íŒŒì¼ì— ìˆ¨ê²¨ì§„ í…ìŠ¤íŠ¸ì˜ ê¸¸ì´
 				int stego_size = 0;
 				if (size > 12) {
 					for (int i = 0; i < 12; i++) {
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 				else {
-					e = "data size error";						// data size°¡ ¿Ã¹Ù¸£Áö ¾ÊÀ» ¶§
+					e = "data size error";			// data sizeê°€ ì˜¬ë°”ë¥´ì§€ ì•Šì„ ë•Œ
 					throw e;
 				}
 				
@@ -125,15 +125,15 @@ int main(int argc, char* argv[]) {
 
 				int stego_temp = 0;
 				for (int i = 0; i < stego_size; i++) {
-					// °¢ ¹ÙÀÌÆ®ÀÇ ¸Ç ¸¶Áö¸· ºñÆ® 8¹ÙÀÌÆ® ´ÜÀ§·Î ÃßÃâ
+					// ê° ë°”ì´íŠ¸ì˜ ë§¨ ë§ˆì§€ë§‰ ë¹„íŠ¸ 8ë°”ì´íŠ¸ ë‹¨ìœ„ë¡œ ì¶”ì¶œ
 					for (int j = 0; j < 8; j++) {
 						stego_temp = stego_temp * 2 + ((int)data[i * 8 + j + 12] % 2);
 					}
-					// ¹®ÀÚ ÇÑ°³ ÀúÀå
+					// ë¬¸ì í•œê°œ ì €ì¥
 					stego_text.push_back((char)stego_temp);
 				}
 
-				// bmp ÆÄÀÏ¿¡ ¼û°ÜÁø ¹®ÀÚ¿­ Ãâ·Â
+				// bmp íŒŒì¼ì— ìˆ¨ê²¨ì§„ ë¬¸ìì—´ ì¶œë ¥
 				cout << endl;
 				for (const auto& item : stego_text) {
 					cout << item;
@@ -141,17 +141,17 @@ int main(int argc, char* argv[]) {
 				cout << endl;
 			}
 			else {
-				e = "no exist 'stego.bmp' file";		// stego.bmp ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§
+				e = "no exist 'stego.bmp' file";		// stego.bmp íŒŒì¼ì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ë•Œ
 				throw e;
 			}
 		
 		}
 		else {
-			e = "invalid option";						// À¯È¿ÇÏÁö ¾ÊÀº ¿É¼ÇÀ» ¼±ÅÃÇßÀ» ¶§
+			e = "invalid option";					// ìœ íš¨í•˜ì§€ ì•Šì€ ì˜µì…˜ì„ ì„ íƒí–ˆì„ ë•Œ
 			throw e;
 		}
 	}
-	catch (string e) {									// ¿¡·¯ ¹ß»ı½Ã ¿¡·¯ Ãâ·Â
+	catch (string e) {							// ì—ëŸ¬ ë°œìƒì‹œ ì—ëŸ¬ ì¶œë ¥
 		cout << "\n[Error] : " << e << endl;
 		cout << "Please re-run Program" << endl;
 	}
